@@ -14,10 +14,12 @@
   updated for the ESP8266 12 Apr 2015
   by Ivan Grokhotkov
 
-  modified endlessly from original example for different purposes
+  modified for Heltec WiFi Kit-8 27 March 2023
   by Mark Rosenau
 
 */
+
+#include "my_wifi.hpp"  // *ssid, *pass
 
 #ifdef WIFI_Kit_8
 const char* boardType = "Wifi Kit8 defined.";
@@ -55,8 +57,8 @@ typedef struct WifiInfo
 
 wifi_info_st KnownId[] =
 {
-    {"trash", "something", "time.nist.gov"},
-    {"hubbellwifi", "Hubbell1905Incorporated", "austxdc1.hi.hubbell-ad.com"},
+    {"01234567890123456789012345678901", "0123456789012345678901234567890123456789012345678901234567890123", "time.nist.gov"},
+    {"hubbellwifi",     "Hubbell1905Incorporated", "austxdc1.hi.hubbell-ad.com"},
 };
 
 unsigned int localPort = 2390;      // local port to listen for UDP packets
@@ -88,6 +90,14 @@ void setup()
     Serial.print("display height: ");
     Serial.println(Heltec.display->height());
 
+    // Serial.printf("KnownId ssid 0 is %s, size %d\n", KnownId[0].ssid, strlen(KnownId[0].ssid));
+    // Serial.printf("KnownId pass 1 is %s, size %d\n", KnownId[0].pass, strlen(KnownId[0].pass));
+    Serial.printf("assigning to actual...\n");
+    KnownId[0].ssid = (char*) ssid;
+    KnownId[0].pass = (char*) password;
+    // Serial.printf("KnownId ssid 0 is %s, size %d\n", KnownId[0].ssid, strlen(KnownId[0].ssid));
+    // Serial.printf("KnownId pass 0 is %s, size %d\n", KnownId[0].pass, strlen(KnownId[0].pass));
+
     // there is no point in continuing if the connection fails:
     while(1)
     {
@@ -104,7 +114,7 @@ void setup()
                 // Serial.println(udp.localPort());
 
                 delay(500);
-                return;
+                return; // exits setup()
             }
         }
         // no network found
@@ -225,6 +235,7 @@ void loop()
         Heltec.display->clear();
         Heltec.display->drawString(0, LINE_1, "local time is:");
         itoa(localhr,displayString,10);
+        Heltec.display->setTextSize(2);
         if (localhr < 10)
         {
             Heltec.display->drawString(0 * 5,LINE_2,"0");
@@ -259,6 +270,8 @@ void loop()
         Heltec.display->drawString((8/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/,LINE_2,displayString);
         Heltec.display->display();
 
+        Heltec.display->setTextSize(1);
+
     }
     else // connection failed:
     {
@@ -275,7 +288,7 @@ void loop()
     for (int i =0; i<20; i++)
     {
         delay(1500);
-        Heltec.display->drawString(i*5, LINE_3, ".");
+        Heltec.display->drawString(i*5, LINE_4, ".");
         Heltec.display->display();
     }
 }
@@ -284,6 +297,9 @@ bool wifiConnect(int inst)
 {
     char  ipString[4];
     int   offset;
+
+//    Serial.printf( "instance is %d\n", inst);
+//    Serial.printf( "pointer is 0x%8X, string is %s\n", &ssid, ssid);
 
     Serial.print("trying connection to ");
     Serial.print(KnownId[inst].ssid);
