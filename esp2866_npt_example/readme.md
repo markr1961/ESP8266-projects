@@ -4,6 +4,9 @@ Scan for a series of networks, connect and get time from the NIST NTP server,
 and display it on the attached OLED display.
 
 ## commits
+04/01/2025 MAR
+time is now displayed in a larger font.
+
 03/31/2025 MAR
 add link to external 'my_wifi' file and substitute its ssid/pass into the first entry in the array.
 To Do: fix the text size problem.

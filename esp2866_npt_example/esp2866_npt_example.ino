@@ -32,6 +32,11 @@ const char* boardType = "not WifiKit8";
 #define LINE_3  16
 #define LINE_4  24
 
+#define TIME_LINE 12
+#define DOT_LINE  20
+
+#define FONT_WIDTH 8
+
 #include "heltec.h"
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
@@ -235,42 +240,46 @@ void loop()
         Heltec.display->clear();
         Heltec.display->drawString(0, LINE_1, "local time is:");
         itoa(localhr,displayString,10);
-        Heltec.display->setTextSize(2);
+
+//        Heltec.display->setTextSize(2);
+        Heltec.display->setFont(ArialMT_Plain_16);
+
         if (localhr < 10)
         {
-            Heltec.display->drawString(0 * 5,LINE_2,"0");
+            Heltec.display->drawString(0 * FONT_WIDTH,TIME_LINE,"0");
             offset = 1;
         }
         else
             offset = 0;
-        Heltec.display->drawString((0/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/,LINE_2,displayString);
+        Heltec.display->drawString((0/*digits*/ + offset/*leading spaces*/) * FONT_WIDTH/*pixels*/, TIME_LINE,displayString);
 
-        Heltec.display->drawString(3 * 5,LINE_2,":");
+        Heltec.display->drawString(3 * FONT_WIDTH, TIME_LINE,":");
 
         itoa(minutes,displayString,10);
         if (minutes < 10)
         {
-            Heltec.display->drawString(4 * 5,LINE_2,"0");
+            Heltec.display->drawString(4 * FONT_WIDTH, TIME_LINE,"0");
             offset = 1;
         }
         else
             offset = 0;
-        Heltec.display->drawString((4/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/,LINE_2,displayString);
+        Heltec.display->drawString((4/*digits*/ + offset/*leading spaces*/) * FONT_WIDTH /*pixels*/, TIME_LINE,displayString);
 
-        Heltec.display->drawString(7 * 5,LINE_2,":");
+        Heltec.display->drawString(7 * FONT_WIDTH, TIME_LINE,":");
 
         itoa(seconds,displayString,10);
         if (seconds < 10)
         {
-            Heltec.display->drawString(8 * 5,LINE_2,"0");
+            Heltec.display->drawString(8 * FONT_WIDTH, TIME_LINE,"0");
             offset = 1;
         }
         else
             offset = 0;
-        Heltec.display->drawString((8/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/,LINE_2,displayString);
+        Heltec.display->drawString((8/*digits*/ + offset/*leading spaces*/) * FONT_WIDTH/*pixels*/, TIME_LINE,displayString);
         Heltec.display->display();
 
-        Heltec.display->setTextSize(1);
+//        Heltec.display->setTextSize(1);
+        Heltec.display->setFont(ArialMT_Plain_10);
 
     }
     else // connection failed:
@@ -284,11 +293,12 @@ void loop()
             setup();
         }
     }
-    // wait ten seconds before asking for the time again
+    Heltec.display->setFont(ArialMT_Plain_10);
+    // wait 30 seconds before asking for the time again
     for (int i =0; i<20; i++)
     {
         delay(1500);
-        Heltec.display->drawString(i*5, LINE_4, ".");
+        Heltec.display->drawString(i*5, DOT_LINE, ".");
         Heltec.display->display();
     }
 }
@@ -333,9 +343,9 @@ bool wifiConnect(int inst)
                 itoa(localIP[i],ipString,10);
                 offset = 3-(strlen(ipString));
 
-                Heltec.display->drawString((i * 4/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/, LINE_3, ipString);
+                Heltec.display->drawString((i * 4/*digits*/ + offset/*leading spaces*/) * 5/*pixels*/, TIME_LINE, ipString);
                 if (i !=3)
-                    Heltec.display->drawString(((i * 4) + 3) * 5,LINE_3,".");
+                    Heltec.display->drawString(((i * 4) + 3) * 5,TIME_LINE,".");
             }
             Heltec.display->display();
             delay(500);
